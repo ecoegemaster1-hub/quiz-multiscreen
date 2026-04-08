@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="fr" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Python Multi-écrans</title>
+<style>
+:root {
+--bg: #020617;
+--panel: #0f172a;
+--card: #111827;
+--card-2: #1e293b;
+--accent-a: #38bdf8;
+--accent-b: #22c55e;
+--danger: #ef4444;
+--warning: #f59e0b;
+--gold: #facc15;
+--text: #e5e7eb;
+--muted: #94a3b8;
+--border: rgba(148, 163, 184, 0.18);
+--shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+margin: 0;
+font-family: Arial, Helvetica, sans-serif;
+background: linear-gradient(135deg, #020617, #0f172a, #111827);
+color: var(--text);
+min-height: 100vh;
+padding: 20px;
+}
+
+.container {
+max-width: 1280px;
+margin: 0 auto;
+}
+
+.panel {
+background: rgba(15, 23, 42, 0.92);
+border: 1px solid var(--border);
+border-radius: 22px;
+box-shadow: var(--shadow);
+}
+
+h1, h2, h3, p { margin-top: 0; }
+
+.hero {
+text-align: center;
+padding: 24px;
+margin-bottom: 18px;
+}
+
+.hero h1 {
+margin-bottom: 8px;
+color: white;
+font-size: 2.15rem;
+}
+
+.subtitle {
+color: var(--muted);
+line-height: 1.7;
+}
+
+.mode-selector {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 16px;
+margin-bottom: 20px;
+}
+
+.mode-card {
+padding: 20px;
+cursor: pointer;
+transition: .2s ease;
+text-align: center;
+}
+
+.mode-card:hover, .mode-card.active {
+transform: translateY(-2px);
+border-color: rgba(250, 204, 21, 0.5);
+box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.15), var(--shadow);
+}
+
+.mode-card h3 { margin-bottom: 8px; }
+.mode-card p { color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+
+.grid-2 {
+display: grid;
+grid-template-columns: 1.05fr 1fr;
+gap: 20px;
+margin-bottom: 20px;
+}
+
+/* نجعل قسم الإعداد يأخذ كامل العرض */
+#setupSection {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* إذا كان داخل grid نكسره */
+.grid-2 {
+  display: block !important;
+}
+
+#setupSection {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.card {
+  width: 100%;
+}
+
+.section {
+padding: 20px;
+}
+
+.section-title {
+font-size: 1.15rem;
+margin-bottom: 16px;
+color: white;
+}
+
+.form-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+
+label {
+display: block;
+font-size: 0.95rem;
+color: var(--muted);
+margin-bottom: 6px;
+}
+
+input, textarea, select {
+width: 100%;
+background: #0b1220;
+color: white;
+border: 1px solid var(--border);
+border-radius: 12px;
+padding: 12px 14px;
+font-size: 1rem;
+}
+
+textarea {
+min-height: 140px;
+resize: vertical;
+direction: ltr;
+text-align: left;
+font-family: Consolas, Monaco, monospace;
+font-size: 0.9rem;
+}
+
+.btn-row {
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+margin-top: 14px;
+}
+
+button {
+border: none;
+border-radius: 12px;
+padding: 12px 16px;
+font-size: 0.98rem;
+font-weight: bold;
+cursor: pointer;
+transition: .2s ease;
+}
+
+button:hover { transform: translateY(-1px); opacity: 0.96; }
+.btn-primary { background: var(--accent-a); color: #082f49; }
+.btn-success { background: var(--accent-b); color: #052e16; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-warning { background: var(--warning); color: #3b2200; }
+.btn-muted { background: #334155; color: white; }
+
+.scoreboard {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 16px;
+margin-bottom: 18px;
+}
+
+.team-card {
+padding: 18px;
+text-align: center;
+background: rgba(17, 24, 39, 0.95);
+border-radius: 18px;
+border: 1px solid var(--border);
+}
+
+.team-a .team-name, .team-a .score { color: var(--accent-a); }
+.team-b .team-name, .team-b .score { color: var(--accent-b); }
+
+.team-name {
+font-size: 1.4rem;
+font-weight: bold;
+margin-bottom: 8px;
+}
+
+.score {
+font-size: 3rem;
+font-weight: bold;
+margin-bottom: 8px;
+}
+
+.small-note { color: var(--muted); font-size: 0.95rem; }
+
+.question-box {
+padding: 22px;
+margin-bottom: 18px;
+background: rgba(17, 24, 39, 0.95);
+border-radius: 18px;
+border: 1px solid var(--border);
+}
+
+.main-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #facc15;
+  margin: 15px 0 25px;
+  letter-spacing: 1px;
+}
+
+.main-title {
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.status-bar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 12px;
+flex-wrap: wrap;
+margin-bottom: 18px;
+}
+
+.badge {
+background: rgba(15, 23, 42, 0.9);
+border: 1px solid var(--border);
+padding: 10px 14px;
+border-radius: 14px;
+font-weight: bold;
+}
+
+.turn { color: var(--gold); }
+.timer { color: white; font-size: 1.15rem; }
+.question-count { color: var(--muted); }
+
+.question-text {
+font-size: 1.45rem;
+line-height: 1.8;
+text-align: center;
+margin: 16px 0 8px;
+}
+
+.choices {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+margin-top: 18px;
+}
+
+.choice {
+width: 100%;
+background: var(--card-2);
+color: white;
+border: 2px solid transparent;
+border-radius: 14px;
+padding: 14px;
+font-size: 1rem;
+text-align: right;
+}
+
+.choice:hover { border-color: rgba(56, 189, 248, 0.8); }
+.choice.correct { border-color: var(--accent-b); background: rgba(34, 197, 94, 0.13); }
+.choice.wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.12); }
+.choice.disabled { opacity: .75; cursor: not-allowed; }
+
+.feedback {
+min-height: 28px;
+text-align: center;
+font-weight: bold;
+margin-top: 16px;
+}
+
+.good { color: var(--accent-b); }
+.bad { color: var(--danger); }
+.info { color: var(--gold); }
+
+.hidden { display: none !important; }
+
+.notice {
+padding: 14px 16px;
+border-radius: 14px;
+line-height: 1.7;
+margin-top: 12px;
+background: rgba(15, 23, 42, 0.85);
+border: 1px solid var(--border);
+color: var(--muted);
+}
+
+.code-box {
+background: #020617;
+border: 1px solid var(--border);
+border-radius: 14px;
+padding: 12px;
+font-family: Consolas, Monaco, monospace;
+direction: ltr;
+text-align: left;
+overflow-x: auto;
+white-space: pre-wrap;
+word-break: break-word;
+}
+
+.join-links {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+margin-top: 12px;
+}
+
+.link-card {
+background: rgba(17, 24, 39, 0.95);
+border: 1px solid var(--border);
+border-radius: 16px;
+padding: 14px;
+}
+
+.link-card h4 { margin-bottom: 8px; }
+.link-card a { color: var(--gold); word-break: break-all; }
+
+.winner-box {
+margin-top: 16px;
+padding: 18px;
+text-align: center;
+border-radius: 18px;
+background: rgba(17, 24, 39, 0.95);
+border: 1px solid var(--border);
+}
+
+.winner-title {
+color: var(--gold);
+font-size: 1.8rem;
+font-weight: bold;
+margin-bottom: 10px;
+}
+
+.center { text-align: center; }
+
+@media (max-width: 980px) {
+.grid-2, .mode-selector, .scoreboard, .join-links, .form-grid, .choices {
+grid-template-columns: 1fr;
+}
+}
+
+body.host-clean .hero,
+body.host-clean .mode-selector {
+  display: none !important;
+}
+
+/* نخفي فقط قسم إعداد Firebase في الشاشة الرئيسية */
+body.host-clean #configSection {
+  display: none !important;
+}
+
+/* ونُبقي إعداد الفرق والأسئلة ظاهرًا */
+body.host-clean #setupSection {
+  display: block !important;
+}
+
+body.host-clean .container {
+  max-width: 1500px;
+}
+
+body.host-clean #displaySection {
+  margin-top: 20px;
+}
+
+body.host-clean .team-name {
+  font-size: 1.8rem;
+}
+
+body.host-clean .score {
+  font-size: 4rem;
+}
+
+body.host-clean .question-text {
+  font-size: 1.9rem;
+  line-height: 1.8;
+}
+
+body.host-clean .container {
+  max-width: 1600px;
+}
+
+body.host-clean #displaySection {
+  margin-top: 0;
+  padding: 28px;
+}
+
+body.host-clean .scoreboard {
+  gap: 22px;
+  margin-bottom: 22px;
+}
+
+body.host-clean .team-card {
+  padding: 24px;
+}
+
+body.host-clean .team-name {
+  font-size: 2rem;
+}
+
+body.host-clean .score {
+  font-size: 4.5rem;
+}
+
+body.host-clean .small-note {
+  font-size: 1.05rem;
+}
+
+body.host-clean .question-box {
+  padding: 28px;
+}
+
+body.host-clean .badge {
+  font-size: 1.1rem;
+  padding: 12px 16px;
+}
+
+body.host-clean .question-text {
+  font-size: 2rem;
+  line-height: 1.9;
+  margin: 28px 0 14px;
+}
+
+body.host-clean .choice {
+  font-size: 1.15rem;
+  padding: 18px;
+}
+
+body.host-clean .feedback {
+  font-size: 1.2rem;
+  margin-top: 18px;
+}
+
+body.host-clean .winner-title {
+  font-size: 2.2rem;
+}
+.center-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.center-single {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.center-single button,
+.center-actions button {
+  min-width: 180px;
+}
+
+.host-bottom-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.host-bottom-actions button {
+  min-width: 160px;
+}
+
+body.host-clean .host-bottom-actions {
+  margin-top: 22px;
+}
+</style>
+</head>
+<body>
+<div class="main-title">
+  🏆 المنافسة الكبرى بين الفرق
+</div>
+<div class="container">
+<div class="hero panel">
+<h1>Quiz HTML / Python متعدد الشاشات</h1>
+<p class="subtitle">
+شاشة رئيسية لعرض النتيجة والسؤال الحالي + هاتف خاص بكل فريق للإجابة على أسئلته.<br>
+هذا الإصدار يحتاج <strong>Firebase</strong> حتى تتزامن الهواتف المختلفة في الوقت الحقيقي.
+</p>
+</div>
+
+<div class="mode-selector" id="modeSelector">
+<div class="mode-card panel" data-mode="host">
+<h3>وضع الشاشة الرئيسية</h3>
+<p>يُستخدم على الحاسوب أو شاشة العرض. يظهر النتيجة، الفريق الحالي، السؤال، والمؤقت.</p>
+</div>
+<div class="mode-card panel" data-mode="teamA">
+<h3>وضع هاتف الفريق 1</h3>
+<p>يظهر فقط أسئلة الفريق 1 على هاتفه مع إمكانية الإجابة المباشرة.</p>
+</div>
+<div class="mode-card panel" data-mode="teamB">
+<h3>وضع هاتف الفريق 2</h3>
+<p>يظهر فقط أسئلة الفريق 2 على هاتفه مع إمكانية الإجابة المباشرة.</p>
+</div>
+</div>
+
+<div class="grid-2">
+<div class="panel section" id="configSection">
+<h2 class="section-title">1) إعداد الربط بين الأجهزة</h2>
+<div class="notice">
+حتى يشتغل هذا النظام بين عدة هواتف، يجب رفع الملف على استضافة أو فتحه من خادم محلي، ثم وضع إعدادات Firebase الخاصة بك.
+</div>
+
+<div class="form-grid" style="margin-top:14px;">
+<div>
+<label for="gameIdInput">معرف اللعبة</label>
+<input id="gameIdInput" value="quiz-python-2026" />
+</div>
+<div>
+<label for="hostUrlInput">رابط الصفحة المنشورة</label>
+<input id="hostUrlInput" placeholder="مثال: https://example.com/quiz_multiscreen_firebase.html" />
+</div>
+</div>
+
+<label for="firebaseConfigInput" style="margin-top:14px;">ضع إعداد Firebase هنا بصيغة JSON</label>
+<textarea id="firebaseConfigInput" spellcheck="false">{
+  "apiKey": "AIzaSyCyufRjtowlVFxSsdGA_73UkIXPradZFe0",
+  "authDomain": "quiz-multiscreen.firebaseapp.com",
+  "databaseURL": "https://quiz-multiscreen-default-rtdb.firebaseio.com",
+  "projectId": "quiz-multiscreen",
+  "storageBucket": "quiz-multiscreen.firebasestorage.app",
+  "messagingSenderId": "537517414768",
+  "appId": "1:537517414768:web:4be1e4df54478925aa57b5"
+}</textarea>
+
+<div class="btn-row">
+<button class="btn-primary" id="initBtn">تفعيل الاتصال</button>
+<button class="btn-success" id="generateLinksBtn">توليد روابط الهواتف</button>
+<button class="btn-danger" id="resetRemoteBtn">إعادة تهيئة اللعبة</button>
+</div>
+
+<div class="join-links hidden" id="joinLinks">
+<div class="link-card">
+<h4>رابط هاتف الفريق 1</h4>
+<a id="teamALink" href="#" target="_blank"></a>
+</div>
+<div class="link-card">
+<h4>رابط هاتف الفريق 2</h4>
+<a id="teamBLink" href="#" target="_blank"></a>
+</div>
+</div>
+
+<div class="notice" id="configStatus">الحالة: لم يتم الاتصال بعد.</div>
+</div>
+
+<div class="panel section" id="setupSection">
+<h2 class="section-title">2) إعداد الفرق والأسئلة</h2>
+
+<div class="form-grid">
+<div>
+<label for="teamANameInput">اسم الفريق 1</label>
+<input id="teamANameInput" value="الفريق 1" />
+</div>
+<div>
+<label for="teamBNameInput">اسم الفريق 2</label>
+<input id="teamBNameInput" value="الفريق 2" />
+</div>
+</div>
+
+<div class="center-single">
+<button class="btn-primary" id="saveNamesBtn">حفظ أسماء الفرق</button>
+</div>
+
+<div class="notice">
+التناوب آلي: سؤال للفريق 1 ثم سؤال للفريق 2، وهكذا. الشاشات الجانبية لا ترى إلا دورها فقط.
+</div>
+</div>
+</div>
+
+<div class="panel section" id="displaySection">
+<h2 class="section-title center" id="screenTitle">الشاشة الرئيسية</h2>
+
+<div class="scoreboard">
+<div class="team-card team-a">
+<div class="team-name" id="teamANameView">الفريق 1</div>
+<div class="score" id="teamAScoreView">0</div>
+<div class="small-note">النقاط الحالية</div>
+</div>
+<div class="team-card team-b">
+<div class="team-name" id="teamBNameView">الفريق 2</div>
+<div class="score" id="teamBScoreView">0</div>
+<div class="small-note">النقاط الحالية</div>
+</div>
+</div>
+
+<div class="question-box">
+<div class="status-bar">
+<div class="badge turn" id="turnInfo">في انتظار بدء اللعبة</div>
+<div class="badge question-count" id="questionCount">0 / 20</div>
+<div class="badge timer" id="timerView">01:00</div>
+</div>
+
+<div class="question-text" id="questionText">سيظهر السؤال هنا</div>
+<div class="choices" id="choices"></div>
+<div class="feedback" id="feedback"></div>
+
+<div class="host-bottom-actions" id="hostBottomActions">
+  <button class="btn-success" id="startBtn">بدء الكويز</button>
+  <button class="btn-warning" id="nextBtn">السؤال التالي</button>
+  <button class="btn-muted" id="pauseBtn">⏸ إيقاف مؤقت</button>
+  <button class="btn-danger" id="resetBottomBtn">🔄 إعادة تهيئة</button>
+</div>
+</div>
+
+<div class="winner-box hidden" id="winnerBox">
+<div class="winner-title" id="winnerTitle"></div>
+<div id="winnerDetails"></div>
+</div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+getDatabase,
+ref,
+set,
+update,
+onValue,
+get
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+const defaultQuestions = [
+{ q: "ما الكلمة المفتاحية المستخدمة لطباعة نص على الشاشة في Python؟", choices: ["show()", "print()", "echo()", "write()"], answer: 1 },
+{ q: "أي نوع بيانات يمثل الأعداد الصحيحة في Python؟", choices: ["float", "str", "int", "list"], answer: 2 },
+{ q: "ما الرمز المستخدم لإسناد قيمة إلى متغير؟", choices: ["==", "=", ":=", "+="], answer: 1 },
+{ q: "أي تعليمة تُستخدم لاتخاذ قرار في Python؟", choices: ["repeat", "switch", "if", "case"], answer: 2 },
+{ q: "ماذا تُرجع الدالة len('python') ؟", choices: ["5", "6", "7", "خطأ"], answer: 1 },
+{ q: "أي من الآتي يمثل قائمة List صحيحة؟", choices: ["{1,2,3}", "(1,2,3)", "[1,2,3]", "<1,2,3>"], answer: 2 },
+{ q: "أي حلقة تُستخدم للتكرار عددًا معلومًا من المرات غالبًا؟", choices: ["for", "if", "try", "def"], answer: 0 },
+{ q: "كيف نطلب إدخالًا من المستخدم؟", choices: ["scan()", "get()", "read()", "input()"], answer: 3 },
+{ q: "ما نتيجة 3 ** 2 في Python؟", choices: ["6", "9", "8", "32"], answer: 1 },
+{ q: "أي كلمة مفتاحية تُستخدم لإنشاء دالة؟", choices: ["function", "define", "def", "fun"], answer: 2 },
+{ q: "ما نوع البيانات للقيمة 3.14 ؟", choices: ["int", "float", "str", "bool"], answer: 1 },
+{ q: "أي تعبير يتحقق من المساواة بين قيمتين؟", choices: ["=", "!=", "==", ":="], answer: 2 },
+{ q: "أي من القيم التالية منطقية Boolean؟", choices: ["'True'", "1", "True", "yes"], answer: 2 },
+{ q: "ما ناتج int('7') ؟", choices: ["'7'", "7", "7.0", "خطأ دائمًا"], answer: 1 },
+{ q: "أي من الآتي تعليق صحيح في Python؟", choices: ["// تعليق", "# تعليق", "<!-- تعليق -->", "** تعليق **"], answer: 1 },
+{ q: "ما الدالة التي تحول النص إلى حروف صغيرة؟", choices: ["small()", "lower()", "down()", "min()"], answer: 1 },
+{ q: "أي جملة تُستخدم لمعالجة الأخطاء؟", choices: ["try / except", "if / else", "for / in", "def / return"], answer: 0 },
+{ q: "ما نتيجة هذا الشرط: 5 > 3 ؟", choices: ["False", "0", "True", "None"], answer: 2 },
+{ q: "أي من الآتي يمثل قاموسًا Dictionary؟", choices: ["['a':1]", "{'a':1}", "('a':1)", "<'a':1>"], answer: 1 },
+{ q: "ما الكلمة المفتاحية التي تُستخدم لإرجاع قيمة من الدالة؟", choices: ["send", "yield", "return", "out"], answer: 2 }
+];
+
+let app = null;
+let db = null;
+let stateUnsubscribeReady = false;
+let timerInterval = null;
+let mode = 'host';
+let localTimer = 60;
+let currentState = null;
+
+const $ = id => document.getElementById(id);
+const modeCards = [...document.querySelectorAll('.mode-card')];
+
+function formatTime(seconds) {
+const safe = Math.max(0, Number(seconds || 0));
+const m = String(Math.floor(safe / 60)).padStart(2, '0');
+const s = String(safe % 60).padStart(2, '0');
+return `${m}:${s}`;
+}
+
+function getGameId() {
+const urlGameId = new URLSearchParams(location.search).get('game');
+return (urlGameId || $('gameIdInput').value || 'quiz-python-2026').trim();
+}
+
+function getRoleFromUrl() {
+const role = new URLSearchParams(location.search).get('role');
+if (role === 'teamA' || role === 'teamB' || role === 'host') return role;
+return 'host';
+}
+
+function lockModeFromUrl() {
+  const role = getRoleFromUrl();
+
+  if (role === 'teamA' || role === 'teamB') {
+    $('modeSelector').classList.add('hidden');
+  }
+}
+
+function setActiveMode(value) {
+  mode = value;
+  modeCards.forEach(card => card.classList.toggle('active', card.dataset.mode === value));
+
+  const hostControlsHidden = value !== 'host';
+  $('configSection').classList.toggle('hidden', hostControlsHidden);
+  $('setupSection').classList.toggle('hidden', hostControlsHidden);
+  $('modeSelector').classList.toggle('hidden', value !== 'host');
+
+  $('screenTitle').textContent = value === 'host'
+    ? 'الشاشة الرئيسية'
+    : value === 'teamA'
+    ? 'هاتف الفريق 1'
+    : 'هاتف الفريق 2';
+
+  applyHostCleanLayout();
+}
+function applyHostCleanLayout() {
+  document.body.classList.toggle('host-clean', mode === 'host');
+}
+
+function getFirebaseConfig() {
+  return {
+    apiKey: "AIzaSyCyufRjtowlVFxSsdGA_73UkIXPradZFe0",
+    authDomain: "quiz-multiscreen.firebaseapp.com",
+    databaseURL: "https://quiz-multiscreen-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "quiz-multiscreen",
+    storageBucket: "quiz-multiscreen.firebasestorage.app",
+    messagingSenderId: "537517414768",
+    appId: "1:537517414768:web:4be1e4df54478925aa57b5"
+  };
+}
+
+function buildInitialState() {
+return {
+meta: {
+createdAt: Date.now(),
+started: false,
+finished: false,
+questionIndex: -1,
+currentTeam: 'A',
+timerStartedAt: null,
+timePerQuestion: 60,
+timerRunning: false,
+pausedRemaining: null,
+lastMessage: 'في انتظار بدء اللعبة'
+},
+teams: {
+A: { name: $('teamANameInput').value.trim() || 'الفريق 1', score: 0 },
+B: { name: $('teamBNameInput').value.trim() || 'الفريق 2', score: 0 }
+},
+questions: defaultQuestions,
+answerState: {
+answered: false,
+selectedIndex: null,
+correctIndex: null,
+status: 'idle',
+respondedBy: null
+}
+};
+}
+
+async function initFirebase() {
+const config = getFirebaseConfig();
+if (!app) {
+app = initializeApp(config);
+db = getDatabase(app);
+}
+$('configStatus').textContent = 'الحالة: تم تهيئة Firebase بنجاح.';
+$('configStatus').style.color = '#22c55e';
+subscribeToGame();
+}
+
+function gameRef(path = '') {
+const gameId = getGameId();
+return ref(db, `multiQuiz/${gameId}${path ? '/' + path : ''}`);
+}
+
+async function saveTeamNames() {
+if (!db) return alert('فعّل الاتصال أولاً.');
+await update(gameRef('teams'), {
+A: { ...(currentState?.teams?.A || {}), name: $('teamANameInput').value.trim() || 'الفريق 1' },
+B: { ...(currentState?.teams?.B || {}), name: $('teamBNameInput').value.trim() || 'الفريق 2' }
+});
+}
+
+async function resetRemoteGame() {
+if (!db) return alert('فعّل الاتصال أولاً.');
+await set(gameRef(), buildInitialState());
+$('pauseBtn') && ($('pauseBtn').textContent = '⏸ إيقاف مؤقت');
+}
+
+async function ensureGameExists() {
+const snap = await get(gameRef());
+if (!snap.exists()) {
+await set(gameRef(), buildInitialState());
+}
+}
+
+async function startQuiz() {
+if (!db) return alert('فعّل الاتصال أولاً.');
+await ensureGameExists();
+const base = buildInitialState();
+base.meta.started = true;
+base.meta.finished = false;
+base.meta.questionIndex = 0;
+base.meta.currentTeam = 'A';
+base.meta.timerStartedAt = Date.now();
+base.meta.timerRunning = true;
+base.meta.lastMessage = 'بدأ الكويز';
+const q = base.questions[0];
+base.answerState = {
+answered: false,
+selectedIndex: null,
+correctIndex: q.answer,
+status: 'active',
+respondedBy: null
+};
+await set(gameRef(), base);
+$('pauseBtn') && ($('pauseBtn').textContent = '⏸ إيقاف مؤقت');
+}
+
+async function nextQuestion() {
+if (!db || !currentState) return alert('فعّل الاتصال أولاً.');
+const nextIndex = Number(currentState.meta.questionIndex) + 1;
+if (nextIndex >= currentState.questions.length) {
+await finishQuiz();
+return;
+}
+
+const nextTeam = currentState.meta.currentTeam === 'A' ? 'B' : 'A';
+const q = currentState.questions[nextIndex];
+await update(gameRef(), {
+meta: {
+  ...currentState.meta,
+  questionIndex: nextIndex,
+  currentTeam: nextTeam,
+  timerStartedAt: Date.now(),
+  timePerQuestion: 60,
+  pausedRemaining: null,
+  timerRunning: true,
+  started: true,
+  finished: false,
+  lastMessage: 'سؤال جديد'
+},
+answerState: {
+answered: false,
+selectedIndex: null,
+correctIndex: q.answer,
+status: 'active',
+respondedBy: null
+}
+})
+$('pauseBtn') && ($('pauseBtn').textContent = '⏸ إيقاف مؤقت');
+}
+
+async function finishQuiz() {
+if (!db || !currentState) return;
+await update(gameRef('meta'), {
+finished: true,
+timerRunning: false,
+lastMessage: 'انتهى الكويز'
+});
+}
+
+async function answerQuestion(selectedIndex, byTeam) {
+if (!db || !currentState) return;
+const qIndex = currentState.meta.questionIndex;
+if (qIndex < 0 || currentState.meta.finished) return;
+const currentTeamLetter = currentState.meta.currentTeam;
+if ((byTeam === 'A' && currentTeamLetter !== 'A') || (byTeam === 'B' && currentTeamLetter !== 'B')) return;
+if (currentState.answerState?.answered) return;
+
+const currentQuestion = currentState.questions[qIndex];
+const correct = selectedIndex === currentQuestion.answer;
+const teamScore = currentState.teams[byTeam].score + (correct ? 1 : 0);
+
+await update(gameRef(), {
+[`teams/${byTeam}/score`]: teamScore,
+answerState: {
+answered: true,
+selectedIndex,
+correctIndex: currentQuestion.answer,
+status: correct ? 'correct' : 'wrong',
+respondedBy: byTeam
+},
+'meta/timerRunning': false,
+'meta/lastMessage': correct ? 'إجابة صحيحة' : 'إجابة خاطئة'
+});
+}
+
+function renderQuestion(state) {
+const qIndex = Number(state?.meta?.questionIndex ?? -1);
+const started = !!state?.meta?.started;
+const finished = !!state?.meta?.finished;
+
+const running = !!state?.meta?.timerRunning;
+const pausedRemaining = state?.meta?.pausedRemaining;
+const duration = Number(state?.meta?.timePerQuestion || 60);
+const startedAt = Number(state?.meta?.timerStartedAt || 0);
+
+if (!started) {
+  $('timerView').textContent = '01:00';
+} else if (finished) {
+  $('timerView').textContent = '00:00';
+} else if (!running) {
+  $('timerView').textContent = formatTime(pausedRemaining != null ? pausedRemaining : duration);
+} else if (startedAt) {
+  const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+  const remaining = Math.max(0, duration - elapsed);
+  $('timerView').textContent = formatTime(remaining);
+}
+
+$('teamANameView').textContent = state?.teams?.A?.name || 'الفريق 1';
+$('teamBNameView').textContent = state?.teams?.B?.name || 'الفريق 2';
+$('teamAScoreView').textContent = state?.teams?.A?.score ?? 0;
+$('teamBScoreView').textContent = state?.teams?.B?.score ?? 0;
+$('winnerBox').classList.add('hidden');
+
+if (!started) {
+$('turnInfo').textContent = 'في انتظار بدء اللعبة';
+$('questionCount').textContent = `0 / ${state?.questions?.length || defaultQuestions.length}`;
+$('questionText').textContent = mode === 'host' ? 'سيظهر السؤال هنا' : 'في انتظار بدء الكويز';
+$('choices').innerHTML = '';
+$('feedback').textContent = '';
+$('timerView').textContent = '01:00';
+return;
+}
+
+if (finished) {
+$('turnInfo').textContent = 'انتهى الكويز';
+$('questionCount').textContent = `${Math.max(0, qIndex + 1)} / ${state.questions.length}`;
+$('questionText').textContent = 'تمت جميع الأسئلة';
+$('choices').innerHTML = '';
+$('feedback').textContent = '';
+$('timerView').textContent = '00:00';
+
+const scoreA = Number(state.teams.A.score || 0);
+const scoreB = Number(state.teams.B.score || 0);
+let winner = 'تعادل بين الفريقين 🤝';
+if (scoreA > scoreB) winner = `الفائز هو: ${state.teams.A.name} 🏆`;
+if (scoreB > scoreA) winner = `الفائز هو: ${state.teams.B.name} 🏆`;
+
+$('winnerTitle').textContent = winner;
+$('winnerDetails').innerHTML = `<strong>${state.teams.A.name}</strong>: ${scoreA} نقطة<br><strong>${state.teams.B.name}</strong>: ${scoreB} نقطة`;
+$('winnerBox').classList.remove('hidden');
+return;
+}
+
+const q = state.questions[qIndex];
+const currentTeamLetter = state.meta.currentTeam;
+const currentTeamName = state.teams[currentTeamLetter]?.name || (currentTeamLetter === 'A' ? 'الفريق 1' : 'الفريق 2');
+const isMyTurn = (mode === 'teamA' && currentTeamLetter === 'A') || (mode === 'teamB' && currentTeamLetter === 'B');
+const isTeamPhone = mode === 'teamA' || mode === 'teamB';
+const isLockedPhone = isTeamPhone && !isMyTurn;
+
+$('turnInfo').textContent = `الدور الآن: ${currentTeamName}`;
+$('questionCount').textContent = `${qIndex + 1} / ${state.questions.length}`;
+
+if (isLockedPhone) {
+$('questionText').textContent = 'ليس دور فريقك الآن. انتظر حتى ينتقل السؤال إليك.';
+$('choices').innerHTML = '';
+$('feedback').textContent = 'الشاشة الرئيسية تتابع السؤال الحالي.';
+$('feedback').className = 'feedback info';
+return;
+}
+
+$('questionText').textContent = q.q;
+$('choices').innerHTML = '';
+
+q.choices.forEach((choice, index) => {
+const btn = document.createElement('button');
+btn.className = 'choice';
+btn.textContent = choice;
+
+const answered = !!state.answerState?.answered;
+const correctIndex = state.answerState?.correctIndex;
+const selectedIndex = state.answerState?.selectedIndex;
+
+if (answered) {
+btn.classList.add('disabled');
+if (index === correctIndex) btn.classList.add('correct');
+if (selectedIndex === index && selectedIndex !== correctIndex) btn.classList.add('wrong');
+btn.disabled = true;
+} else if (isTeamPhone || mode === 'host') {
+if (mode === 'teamA') btn.onclick = () => answerQuestion(index, 'A');
+if (mode === 'teamB') btn.onclick = () => answerQuestion(index, 'B');
+if (mode === 'host') btn.disabled = true;
+if (mode === 'host') btn.classList.add('disabled');
+}
+
+$('choices').appendChild(btn);
+});
+
+const status = state.answerState?.status;
+const respondedBy = state.answerState?.respondedBy;
+const teamName = respondedBy ? state.teams[respondedBy]?.name : '';
+
+if (status === 'correct') {
+$('feedback').textContent = `إجابة صحيحة ✅ (${teamName})`;
+$('feedback').className = 'feedback good';
+} else if (status === 'wrong') {
+$('feedback').textContent = `إجابة خاطئة ❌ (${teamName})`;
+$('feedback').className = 'feedback bad';
+} else {
+$('feedback').textContent = isTeamPhone ? 'أجب من هاتف فريقك قبل انتهاء الوقت.' : 'الإجابة تتم من هاتف الفريق صاحب الدور.';
+$('feedback').className = 'feedback info';
+}
+}
+
+function startLocalTimerWatcher() {
+  clearInterval(timerInterval);
+
+  timerInterval = setInterval(async () => {
+    if (!currentState?.meta?.started || currentState?.meta?.finished) return;
+
+    const running = !!currentState.meta.timerRunning;
+    const pausedRemaining = currentState.meta.pausedRemaining;
+    const startedAt = Number(currentState.meta.timerStartedAt || 0);
+    const duration = Number(currentState.meta.timePerQuestion || 60);
+
+    // إذا كان المؤقت موقوفًا، نعرض الزمن المتبقي فقط ولا نواصل العد
+    if (!running) {
+      if (pausedRemaining != null) {
+        $('timerView').textContent = formatTime(pausedRemaining);
+      } else {
+        $('timerView').textContent = formatTime(duration);
+      }
+      return;
+    }
+
+    // إذا كان المؤقت شغالًا
+    if (!startedAt) {
+      $('timerView').textContent = formatTime(duration);
+      return;
+    }
+
+    const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+    const remaining = Math.max(0, duration - elapsed);
+
+    localTimer = remaining;
+    $('timerView').textContent = formatTime(remaining);
+
+    if (remaining <= 0 && db) {
+      const alreadyAnswered = !!currentState?.answerState?.answered;
+      if (!alreadyAnswered) {
+        await update(gameRef(), {
+          answerState: {
+            answered: true,
+            selectedIndex: null,
+            correctIndex: currentState.questions[currentState.meta.questionIndex].answer,
+            status: 'timeout',
+            respondedBy: null
+          },
+          'meta/timerRunning': false,
+          'meta/pausedRemaining': 0,
+          'meta/lastMessage': 'انتهى الوقت'
+        });
+      }
+    }
+  }, 250);
+}
+
+function subscribeToGame() {
+  if (!db || stateUnsubscribeReady) return;
+  stateUnsubscribeReady = true;
+
+  onValue(gameRef(), (snapshot) => {
+    if (!snapshot.exists()) {
+      currentState = buildInitialState();
+    } else {
+      currentState = snapshot.val();
+    }
+
+    $('teamANameInput').value = currentState?.teams?.A?.name || 'الفريق 1';
+    $('teamBNameInput').value = currentState?.teams?.B?.name || 'الفريق 2';
+
+    if ($('pauseBtn')) {
+      $('pauseBtn').textContent = currentState?.meta?.timerRunning
+        ? '⏸ إيقاف مؤقت'
+        : '▶️ استئناف';
+    }
+
+    renderQuestion(currentState);
+  });
+
+  startLocalTimerWatcher();
+}
+
+function generateJoinLinks() {
+const baseUrl = $('hostUrlInput').value.trim() || location.href.split('?')[0];
+const game = encodeURIComponent(getGameId());
+const aUrl = `${baseUrl}?role=teamA&game=${game}`;
+const bUrl = `${baseUrl}?role=teamB&game=${game}`;
+$('teamALink').href = aUrl;
+$('teamALink').textContent = aUrl;
+$('teamBLink').href = bUrl;
+$('teamBLink').textContent = bUrl;
+$('joinLinks').classList.remove('hidden');
+}
+
+modeCards.forEach(card => {
+  card.addEventListener('click', () => {
+    const lockedRole = getRoleFromUrl();
+
+    if (lockedRole === 'teamA' || lockedRole === 'teamB') return;
+
+    setActiveMode(card.dataset.mode);
+  });
+});
+
+$('initBtn').addEventListener('click', async () => {
+try {
+await initFirebase();
+await ensureGameExists();
+} catch (error) {
+$('configStatus').textContent = `الحالة: ${error.message}`;
+$('configStatus').style.color = '#ef4444';
+}
+});
+
+$('generateLinksBtn').addEventListener('click', generateJoinLinks);
+$('saveNamesBtn').addEventListener('click', saveTeamNames);
+$('startBtn').addEventListener('click', startQuiz);
+$('nextBtn').addEventListener('click', nextQuestion);
+$('resetRemoteBtn').addEventListener('click', resetRemoteGame);
+// زر إعادة التهيئة من الأسفل
+$('resetBottomBtn').addEventListener('click', resetRemoteGame);
+
+// زر إيقاف مؤقت
+$('pauseBtn').addEventListener('click', async () => {
+  if (!db || !currentState) return;
+  if (!currentState.meta.started || currentState.meta.finished) return;
+
+  const isRunning = !!currentState.meta.timerRunning;
+  const startedAt = Number(currentState.meta.timerStartedAt || 0);
+  const duration = Number(currentState.meta.timePerQuestion || 60);
+  const currentPaused = currentState.meta.pausedRemaining;
+
+  if (isRunning) {
+    const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+    const remaining = Math.max(0, duration - elapsed);
+
+    await update(gameRef(), {
+      'meta/timerRunning': false,
+      'meta/pausedRemaining': remaining,
+      'meta/lastMessage': 'تم إيقاف المؤقت ⏸'
+    });
+  } else {
+    const resumeFrom = currentPaused != null ? Number(currentPaused) : duration;
+
+    await update(gameRef(), {
+      'meta/timerRunning': true,
+      'meta/timerStartedAt': Date.now(),
+      'meta/timePerQuestion': resumeFrom,
+      'meta/pausedRemaining': null,
+      'meta/lastMessage': 'تم استئناف المؤقت ▶️'
+    });
+  }
+});
+
+// Initial mode from URL
+const initialRole = getRoleFromUrl();
+setActiveMode(initialRole);
+lockModeFromUrl();
+
+currentState = buildInitialState();
+renderQuestion(currentState);
+
+// Boot (تشغيل التطبيق)
+(async function bootApp() {
+  try {
+    await initFirebase();
+
+    if (initialRole === 'host') {
+      await ensureGameExists();
+    }
+  } catch (error) {
+    $('configStatus').textContent = `الحالة: ${error.message}`;
+    $('configStatus').style.color = '#ef4444';
+    console.error('Firebase init error:', error);
+  }
+})();
+
+</script>
+</body>
+</html>
